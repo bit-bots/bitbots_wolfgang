@@ -10,6 +10,9 @@ import pybullet_data
 import rospkg
 
 
+# max torque at 180 deg is 2,3Nm therefore 0.0128 per degree
+SPRING_TORQUE_PER_DEG = 0.0128
+
 class Simulation:
     def __init__(self, gui):
         self.gui = gui
@@ -148,11 +151,24 @@ class Simulation:
             if tKey in keys and keys[tKey] & p.KEY_WAS_TRIGGERED:
                 self.real_time = not self.real_time
                 p.setRealTimeSimulation(self.real_time)
+                print("Warning, using real time will lead to torque from springs to fail")
 
         # check if simulation should continue currently
         if not self.paused or single_step:
             self.time += self.timestep
+            # apply torques from torsion springs
+            for joint_name, direction in [("LKnee", 1), ("RKnee", -1)]:
+                joint = self.joints[joint_name]
+                joint_position = joint.get_position()
+                link_index = joint.parent_link
+                torque = direction *  SPRING_TORQUE_PER_DEG * joint_position
+                #todo this does somehow not work correctly. probably the torque is applied
+                p.applyExternalTorque(self.robot_index, link_index, (0, 0, torque), p.LINK_FRAME)
+
+            # do the actual sim step
             p.stepSimulation()
+
+            # filter sensors
             for name, ps in self.pressure_sensors.items():
                 ps.filter_step()
 
@@ -195,6 +211,8 @@ class Joint:
         self.upperLimit = joint_info[9]
         self.damping = joint_info[6]
         self.friction = joint_info[7]
+        self.parent_link = joint_info[16]
+        self.axis = joint_info[13]
 
     def reset_position(self, position, velocity):
         p.resetJointState(self.body_index, self.joint_index, targetValue=position, targetVelocity=velocity)
