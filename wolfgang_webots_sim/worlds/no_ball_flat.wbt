@@ -1,0 +1,28 @@
+#VRML_SIM R2021a utf8
+DEF world_info WorldInfo {
+}
+Viewpoint {
+  orientation 0.6681516075593763 -0.3883288327886387 -0.634644898302062 1.6873553109255188
+  position -6.368641799291364 0.4995800332349363 1.8644924178871427
+}
+TexturedBackground {
+  texture "stadium"
+}
+TexturedBackgroundLight {
+  texture "stadium"
+}
+DEF amy Wolfgang {
+  translation -0.9968797400586715 2.9921102788692946 0.4274542359577024
+  rotation 0.12198099937775954 0.12935172908461096 -0.9840674600725422 1.5869763401625028
+  name "amy"
+  controller "<extern>"
+}
+Floor {
+  rotation 1 0 0 1.57
+  size 25 25
+  tileSize 1 1
+}
+DEF supervisor_robot hl_supervisor {
+  name "supervisor_robot"
+  controller "<extern>"
+}

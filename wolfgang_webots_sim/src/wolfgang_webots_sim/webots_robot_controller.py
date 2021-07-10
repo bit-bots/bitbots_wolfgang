@@ -27,6 +27,7 @@ class RobotController:
         :param external_controller: Whether an external controller is used, necessary for RobotSupervisorController
         :param base_ns: The namespace of this node, can normally be left empty
         """
+        print("robo")
         self.ros_active = ros_active
         self.recognize = recognize
         self.camera_active = camera_active
